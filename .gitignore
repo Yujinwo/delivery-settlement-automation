@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# 환경파일
+.env
+venv/
+.venv/
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# 입력/출력 데이터 (용량 방지)
+input/*.csv
+output/*.xlsx
