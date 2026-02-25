@@ -65,6 +65,41 @@ if missing:
 
 
 # ==============================
+# 데이터 타입 정제 (추가)
+# ==============================
+df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
+
+numeric_cols = ["qty", "unit_price", "fee_rate"]
+for col in numeric_cols:
+    df[col] = pd.to_numeric(df[col], errors="coerce")
+
+# 결측 제거
+before = len(df)
+df = df.dropna(subset=["order_id", "order_date", "qty", "unit_price", "fee_rate"])
+after = len(df)
+
+print(f"[INFO] 결측 제거: {before - after}건")
+
+
+# ==============================
+# 데이터 이상치 검증 (추가)
+# ==============================
+if (df["qty"] <= 0).any():
+    raise ValueError("수량 오류 데이터 존재")
+
+if (df["unit_price"] <= 0).any():
+    raise ValueError("단가 오류 데이터 존재")
+
+if not df["fee_rate"].between(0, 1).all():
+    raise ValueError("수수료율 범위 오류")
+
+# 중복 주문 처리
+before = len(df)
+df = df.drop_duplicates(subset=["order_id"])
+after = len(df)
+print(f"[INFO] 중복 제거: {before - after}건")
+
+# ==============================
 # 4. 정산 계산
 # ==============================
 df["gross_amount"] = df["qty"] * df["unit_price"]
